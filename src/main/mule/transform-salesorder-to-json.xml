@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<sub-flow name="transform-salesorder-to-json" doc:id="88b55a0d-d9bb-4b16-885f-d89d1e9592a8" >
+		<ee:transform doc:name="get soap request body" doc:id="7764af0a-14d1-4278-b1d7-bb205e39b563" >
+			<ee:message >
+				<ee:set-payload resource="dwl/get-soap-request-body.dwl" />
+			</ee:message>
+			<ee:variables />
+		</ee:transform>
+		<ee:transform doc:name="transform xml to canonical json" doc:id="c32b49f4-e1d0-4ff8-b56f-ba6d19a34b13" >
+			<ee:message >
+				<ee:set-payload resource="dwl/transform-xml-to-canonical-json.dwl" />
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="orderNumber" ><![CDATA[%dw 2.0
+output application/json
+ns ns0 http://www.samples.com/SalesOrder/
+---
+payload.ns0#CreateOrder.ns0#Order.OrderNumber]]></ee:set-variable>
+				<ee:set-variable variableName="sourceSystem" ><![CDATA[%dw 2.0
+output application/json
+ns ns0 http://www.samples.com/SalesOrder/
+---
+payload.ns0#CreateOrder.ns0#Order.SourceSystem]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="before calling order create prc api" doc:id="1ef4de66-f723-4ae1-a6d7-277a5f27d6bb" message="#[payload]" />
+		<http:request method="POST" doc:name="call order create prc api" doc:id="dbbbae7d-22dc-4713-b37c-4da3fa4faa26" config-ref="order-create-prc-http-request-config" url="${order-create-prc-api.url}"/>
+		<ee:transform doc:name="sending sucess response" doc:id="ec959135-0a3d-4262-aa78-d98c14118edc" >
+			<ee:message >
+				<ee:set-payload resource="dwl/sending-sucess-response.dwl" />
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+	<sub-flow name="transform-salesorder-to-jsonSub_Flow" doc:id="200da845-d09b-4e21-ac08-5baceab158ee" >
+		<choice doc:name="Choice" doc:id="13c8b7a2-23cf-41a1-ab0a-30a953a06051">
+			<when expression="#[attributes.statusCode == 200]">
+				<ee:transform doc:name="sending sucess response" doc:id="a4b55dcf-5306-41d5-bc4b-1a98ba00ac6d">
+					<ee:message>
+						<ee:set-payload resource="dwl/sending-sucess-response.dwl" />
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise>
+				<ee:transform doc:name="sending fault response" doc:id="507eba9b-3e65-40e2-bec6-d6ac4124e1ee">
+			<ee:message>
+						<ee:set-payload resource="dwl/sending-fault-response.dwl" />
+			</ee:message>
+		</ee:transform>
+			</otherwise>
+		</choice>
+	</sub-flow>
+</mule>

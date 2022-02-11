@@ -1,0 +1,36 @@
+# This API's config
+api:
+  id: "17489561" # replace with real id once added to api manager
+  client-id: ""
+  host: "0.0.0.0"
+  basePath: "/*"
+
+# Cloudhub HTTP listener ports
+http:
+  port: "8091"
+  private:
+    port: "8091"
+https:
+  port: "8082"
+  private:
+    port: "8092"
+
+# General HTTP requester config
+httpRequest:
+  maxConnections: "-1"
+  responseBufferSize: "1024"
+  timeouts:    
+    connection: "30000"
+    idle: "3000"
+    response: "30000"
+  reconnection:
+    frequency: "500"
+    attempts: "3"
+
+order-create-prc-api:
+  host: "dev-order-create-prc.us-e2.cloudhub.io"
+  port: "8081"     
+  path: "/api/orders"
+  clientId: "e2a79f8250ea4c3db23bd441aaf17be5"
+  clientSecret: "672734E093Fa48c0854bDeDb3Db17265"
+  url: "http://dev-order-create-prc.us-e2.cloudhub.io/api/orders"

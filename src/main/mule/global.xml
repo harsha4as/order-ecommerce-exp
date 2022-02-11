@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:apikit-soap="http://www.mulesoft.org/schema/mule/apikit-soap"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/apikit-soap http://www.mulesoft.org/schema/mule/apikit-soap/current/mule-apikit-soap.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
+	<apikit-soap:config name="soapkit-config" service="SalesOrder" port="SalesOrderSOAP" doc:name="APIKit for SOAP Configuration" doc:id="49cfd7ff-9266-44a2-b960-cba79f920b74" wsdlLocation="api\SalesOrder.wsdl" />
+	<http:request-config name="order-create-prc-http-request-config" doc:name="HTTP Request configuration" doc:id="e3eba31b-b69e-40be-ac3b-d03425360c83" responseTimeout="${httpRequest.timeouts.response}">
+		<http:request-connection host="${order-create-prc-api.host}" maxConnections="${httpRequest.maxConnections}" connectionIdleTimeout="${httpRequest.timeouts.idle}" responseBufferSize="${httpRequest.responseBufferSize}" port="${order-create-prc-api.port}">
+			<http:authentication >
+				<http:basic-authentication username="${order-create-prc-api.clientId}" password="${order-create-prc-api.clientSecret}" />
+			</http:authentication>
+		</http:request-connection>
+	</http:request-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="cfe868f1-2fcc-4c87-9117-7436de3d3bd5" file="properties/${mule.env}.yaml" />
+	<global-property doc:name="Global Property" doc:id="555ec763-6e4e-43ff-8852-9fa358dee8de" name="mule.env" value="local" />
+</mule>
